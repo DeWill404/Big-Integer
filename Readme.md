@@ -1,4 +1,4 @@
-**Want to work on no. greater then 2147483647, You came to correct place**🤔
+**Want to work on no. greater then 2147483647 in c, You came to correct place**🤔
 
 # Big Integer
 Now, length of integer is no longer restriction.... 😊
