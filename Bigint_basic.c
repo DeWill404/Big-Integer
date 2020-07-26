@@ -14,7 +14,7 @@ char* Bigint_assign( char *s, int size ) {
 	char *str;
 
 	// If 1st digit is sign
-	if ( !isdigit(s[0]) ) { size--; s++; }
+	if ( s[0]=='+' || s[0]=='-' ) { size--; s++; }
 
 	// Allocate and copy data
 	str = (char *)malloc( size*sizeof(char) );
@@ -25,9 +25,30 @@ char* Bigint_assign( char *s, int size ) {
 }
 
 
-/* Check if given no. string is valid */
-int Bigint_isValid(char *number) {
+/* Function to remove preceading 0 and strip spaces */
+char* Bigint_strip(char *number) {
 
+	// Right trim
+	while ( *number == ' ' ) { number++; }
+	
+	// Remove zero
+	while ( strlen(number)>1 && *number=='0' ) { number++; }
+	
+	// Left trim
+	char temp[ strlen(number) ];
+	strcpy( temp, number );
+	while ( temp[strlen(temp)-1]==' ' ) { temp[strlen(temp)-1]='\0'; }
+	number = temp;
+
+	return number;
+
+}
+
+
+/* Check if given no. string is valid */
+int Bigint_isStringValid(char *number) {
+
+	// Return false in any char is not no.
 	for ( int i=0; i<strlen(number); i++ ) {
 		if ( !isdigit(number[i]) ) {
 			if ( !(i==0 && (number[i]=='-' || number[i]=='+')) ) {
@@ -41,11 +62,11 @@ int Bigint_isValid(char *number) {
 
 
 /* Null pointer for Bigint numbers */
-Bigint Bigint_none() {
+Bigint Bigint_none(char *msg) {
 
 	Bigint temp;
 
-	temp.value = Bigint_assign(" e", 2);
+	temp.value = Bigint_assign(msg, strlen(msg));
 	temp.size = -1;
 	temp.sign = -1;
 
@@ -54,11 +75,11 @@ Bigint Bigint_none() {
 }
 
 /* Check if given Bigint no. is invalid */
-int Bigint_isNone( Bigint number ) {
+int Bigint_isValid( Bigint number ) {
 
-	if (number.size != strlen(number.value)) { return 0; }
-	if (number.sign == -1) 					 { return 0; }
-	if ( !Bigint_isValid(number.value) ) 	 { return 0; }
+	if (number.size != strlen(number.value))   { return 0; }
+	if (number.sign == -1)                     { return 0; }
+	if ( !Bigint_isStringValid(number.value) ) { return 0; }
 
 	return 1;
 
@@ -68,8 +89,15 @@ int Bigint_isNone( Bigint number ) {
 /* Get number */
 Bigint Bigint_set( char *number ) {
 
-	if (!Bigint_isValid(number)) { return Bigint_none(); }
+	// Strip spaces are remove zero
+	number = Bigint_strip(number);
 
+	// check if input string in valid
+	if (!Bigint_isStringValid(number)) {
+		return Bigint_none("ERROR");
+	}
+
+	// If valid then assign
 	Bigint temp;
 	temp.value = Bigint_assign(number, strlen(number));
 	temp.size = strlen(temp.value);
@@ -84,15 +112,21 @@ Bigint Bigint_set( char *number ) {
 int Bigint_compare( Bigint num1, Bigint num2 ) {
 	
 	// Check if num1 & num2, is valid
-	if ( Bigint_isNone(num1) && Bigint_isNone(num2) ) {
+	if ( Bigint_isValid(num1) && Bigint_isValid(num2) ) {
 
 		int cmp = strcmp( num1.value, num2.value );
+
+		printf("%s %s %d\n", num1.value, num2.value, cmp);
 		
 		// Condition to reverse the sign
 		if ((cmp==1 && num1.sign) || (cmp==-1 && num2.sign)) { cmp*=-1; }
 
+		printf("%d\n", cmp);
+
 		// Convert to +1, 0, -1 foramt
-		cmp /= (cmp<0) ? -(cmp) : cmp;
+		if ( cmp ) { cmp /= (cmp<0) ? -(cmp) : cmp; }
+
+		printf("%d\n", cmp);
 
 		return cmp;
 
