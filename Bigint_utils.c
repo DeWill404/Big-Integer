@@ -1,4 +1,9 @@
-/* Basic structure of Big Integer */
+/**
+ * @brief Datatype for Bigint
+ * @param size Store size of Bigint
+ * @param sign Store sign of Bigint
+ * @param value Store actual no. of Bigint
+ */
 typedef struct Bigint {
 
 	int size;
@@ -7,8 +12,12 @@ typedef struct Bigint {
 
 } Bigint;
 
-
-/* Allocate size and value to value of Bigint */
+/**
+ * @brief Function to extract size & sign and allocate it to string
+ * @param s input string no.
+ * @param size length of input no.
+ * @return Allocated string only containg no.
+ */
 char* Bigint_assign( char *s, int size ) {
 
 	char *str;
@@ -24,16 +33,19 @@ char* Bigint_assign( char *s, int size ) {
 
 }
 
-
-/* Function to remove preceading 0 and strip spaces */
+/**
+ * @brief Function to strip spaces and preceeding zero from string
+ * @param number input string no.
+ * @return String only containg no. after removing unwanted 0's and spaces
+ */
 char* Bigint_strip(char *number) {
 
 	// Right trim
 	while ( *number == ' ' ) { number++; }
-	
+
 	// Remove zero
 	while ( strlen(number)>1 && *number=='0' ) { number++; }
-	
+
 	// Left trim
 	char temp[ strlen(number) ];
 	strcpy( temp, number );
@@ -44,8 +56,11 @@ char* Bigint_strip(char *number) {
 
 }
 
-
-/* Check if given no. string is valid */
+/**
+ * @brief Function to check if input string is valid to create Bigint no.
+ * @param number String no. to check
+ * @return integer value 1(Valid) and 0(Invalid)
+ */
 int Bigint_isStringValid(char *number) {
 
 	// Return false in any char is not no.
@@ -60,8 +75,11 @@ int Bigint_isStringValid(char *number) {
 
 }
 
-
-/* Null pointer for Bigint numbers */
+/**
+ * @brief Function to set Invalid Bigint no.
+ * @param msg message to indicate cause of error
+ * @return NULL Bigint with error message
+ */
 Bigint Bigint_none(char *msg) {
 
 	Bigint temp;
@@ -74,7 +92,11 @@ Bigint Bigint_none(char *msg) {
 
 }
 
-/* Check if given Bigint no. is invalid */
+/**
+ * @brief Function to check if given Bigint is valid
+ * @param number Bigint no. to check
+ * @return integer value 1(Valid) and 0(Invalid)
+ */
 int Bigint_isValid( Bigint number ) {
 
 	if (number.size != strlen(number.value))   { return 0; }
@@ -85,8 +107,11 @@ int Bigint_isValid( Bigint number ) {
 
 }
 
-
-/* Get number */
+/**
+ * @brief Function to set Bigint no.
+ * @param number No. string to be allogated to Bigint
+ * @return Bigint no. of given no. string
+ */
 Bigint Bigint_set( char *number ) {
 
 	// Strip spaces are remove zero
@@ -94,7 +119,7 @@ Bigint Bigint_set( char *number ) {
 
 	// check if input string in valid
 	if (!Bigint_isStringValid(number)) {
-		return Bigint_none("ERROR");
+		return Bigint_none("Invalid Number");
 	}
 
 	// If valid then assign
@@ -102,35 +127,19 @@ Bigint Bigint_set( char *number ) {
 	temp.value = Bigint_assign(number, strlen(number));
 	temp.size = strlen(temp.value);
 	temp.sign = (isdigit(number[0]) || number[0]=='+') ? 0 : 1;
-	
+
 	return temp;
 
 }
 
 
-/* Compare Bigint no. */
+/**
+ * @brief Function to Compare to Bigint no.
+ * @param num1 Bigint no. 1
+ * @param num2 Bigint no. 2
+ * @return integer value 0(equal), 1(not equal) and -2(invalid)
+ */
 int Bigint_compare( Bigint num1, Bigint num2 ) {
-	
-	// Check if num1 & num2, is valid
-	if ( Bigint_isValid(num1) && Bigint_isValid(num2) ) {
-
-		int cmp = strcmp( num1.value, num2.value );
-
-		printf("%s %s %d\n", num1.value, num2.value, cmp);
-		
-		// Condition to reverse the sign
-		if ((cmp==1 && num1.sign) || (cmp==-1 && num2.sign)) { cmp*=-1; }
-
-		printf("%d\n", cmp);
-
-		// Convert to +1, 0, -1 foramt
-		if ( cmp ) { cmp /= (cmp<0) ? -(cmp) : cmp; }
-
-		printf("%d\n", cmp);
-
-		return cmp;
-
-	}
 
 	return -2;
 
