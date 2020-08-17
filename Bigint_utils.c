@@ -122,7 +122,7 @@ Bigint Bigint_set( char *number ) {
 
 	// check if input string in valid
 	if (!Bigint_isStringValid(number)) {
-		return Bigint_none("Invalid Number");
+		return Bigint_none("Invalid_no");
 	}
 
 	// If valid then assign
