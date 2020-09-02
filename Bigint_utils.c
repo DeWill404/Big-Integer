@@ -1,9 +1,10 @@
 /* Datatype for Bigint */
 typedef struct Bigint {
-	long long size;
+	int size;
 	int sign;
 	char *value;
 } Bigint;
+
 
 /* Fuction to generate substring of given string */
 char* Bigint_substr(char *string, int start, int end) {
@@ -21,6 +22,7 @@ char* Bigint_substr(char *string, int start, int end) {
 	return substring;
 }
 
+
 /* Function to strip spaces and preceeding zero from string */
 char* Bigint_strip(char *number) {
 
@@ -32,6 +34,9 @@ char* Bigint_strip(char *number) {
 	}
 	if (l || r!=strlen(number)-1) { number=Bigint_substr(number, l, r); }
 
+	// Length After triming spaces
+	int length = strlen(number);
+
 	// Remove Unsignificent 0's
 	if ( !isdigit(number[0]) ) {	// If 1st char is sign
 		// Get count of Unsignificent 0's
@@ -39,7 +44,8 @@ char* Bigint_strip(char *number) {
 		while ( number[count+1] == '0' ) { count++; }
 		// Shift left by count position
 		if ( count ) {
-			int length = strlen(number);
+			// Reduce count by if it only contain 0's
+			count = count==length-1 ? count-1 : count;
 			char *temp = (char*)malloc(sizeof(char)*(length-count));
 			*(temp) = *(number);
 			int i = 1;
@@ -52,11 +58,16 @@ char* Bigint_strip(char *number) {
 	} else {	// If 1st char is not sign
 		int count = 0;
 		while ( number[count] == '0' ) { count++; }
-		if ( count ) { number=Bigint_substr(number, count, strlen(number)-1); }
+		if ( count ) {
+			// Reduce count by if it only contain 0's
+			count = count==length ? count-1 : count;
+			number=Bigint_substr(number, count, strlen(number)-1);
+		}
 	}
 
 	return number;
 }
+
 
 /* Function to extract size & sign and allocate it to string */
 char* Bigint_assign( char *s, int size ) {
@@ -72,6 +83,7 @@ char* Bigint_assign( char *s, int size ) {
 
 	return str;
 }
+
 
 /* Function to check if input string is valid to create Bigint no. */
 int Bigint_isStringValid(char *number) {
@@ -92,6 +104,7 @@ int Bigint_isStringValid(char *number) {
 	return 1;
 }
 
+
 /* Function to set Invalid Bigint no. */
 Bigint Bigint_none(char *msg) {
 	Bigint temp;
@@ -102,6 +115,7 @@ Bigint Bigint_none(char *msg) {
 
 	return temp;
 }
+
 
 /* Function to check if given Bigint is valid */
 int Bigint_isValid( Bigint number ) {
@@ -114,15 +128,17 @@ int Bigint_isValid( Bigint number ) {
 
 }
 
+
 /* Function to set Bigint no. */
-Bigint Bigint_set( char *number ) {
+Bigint Bigint_set( char *number, int valid ) {
 
 	// Strip
 	number = Bigint_strip( number );
 
 	// check if input string in valid
-	if (!Bigint_isStringValid(number)) {
-		return Bigint_none("Invalid_no");
+	if ( !valid ) {
+		if (!strcmp(number,"")) { return Bigint_none("Empty_no"); }
+		if (!Bigint_isStringValid(number)) {return Bigint_none("Invalid_no");}
 	}
 
 	// If valid then assign
@@ -133,6 +149,12 @@ Bigint Bigint_set( char *number ) {
 
 	return temp;
 
+}
+
+
+/* Function to Compare only number not sign */
+int Bigint_strcmp( Bigint n1, Bigint n2 ) {
+	return n1.size==n2.size ? strcmp(n1.value,n2.value) : n1.size-n2.size;
 }
 
 
@@ -147,8 +169,7 @@ int Bigint_compare( Bigint num1, Bigint num2 ) {
 	if ( num1.sign < num2.sign ) { return 1; }
 
 	// Get difference
-	long long diff;
-	diff = num1.size==num2.size ? strcmp(num1.value,num2.value) : num1.size-num2.size;
+	long long diff = Bigint_strcmp(num1, num2);
 
 	// if numbers are same
 	if ( diff == 0 ) { return diff; }
