@@ -54,3 +54,12 @@ Bigint bigadd(Bigint n1, Bigint n2) { return Bigint_add(n1, n2); }
  * @return Bigint value with value = no.1 - no.2
  */
 Bigint bigsub(Bigint n1, Bigint n2) { return Bigint_subtract(n1, n2); }
+
+
+/**
+ * @brief Function to Multiply 2 Bigint no.
+ * @param num1 Bigint no. 1
+ * @param num2 Bigint no. 2
+ * @return Bigint value with value = no.1 * no.2
+ */
+Bigint bigmultiply(Bigint n1, Bigint n2) { return Bigint_multiply(n1, n2); }

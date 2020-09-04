@@ -6,8 +6,24 @@ typedef struct Bigint {
 } Bigint;
 
 
+/* Function to extract size & sign and allocate it to string */
+char* Bigint_assign( char *s, int size ) {
+
+	// Allocate and copy data
+	char *str = (char *)malloc( size*sizeof(char) );
+	strcpy(str, s);
+
+	// If 1st digit is sign
+	if ( str[0]=='+' || str[0]=='-' ) { str++; }
+
+	return str;
+
+}
+
+
 /* Fuction to generate substring of given string */
 char* Bigint_substr(char *string, int start, int end) {
+
 	// Allocate
 	char *substring = (char*)malloc( (end-start+1)*sizeof(char) );
 	int s = sizeof(substring);
@@ -18,13 +34,16 @@ char* Bigint_substr(char *string, int start, int end) {
 	*(substring+i) = '\0';
 
 	s = sizeof(substring);
-	
+
 	return substring;
+
 }
 
 
 /* Function to strip spaces and preceeding zero from string */
-char* Bigint_strip(char *number) {
+char* Bigint_strip(char *n) {
+
+	char *number = Bigint_assign(n, strlen(n));
 
 	// Trim the spaces
 	int l=0, r=strlen(number)-1;
@@ -66,27 +85,13 @@ char* Bigint_strip(char *number) {
 	}
 
 	return number;
-}
 
-
-/* Function to extract size & sign and allocate it to string */
-char* Bigint_assign( char *s, int size ) {
-	// Allocate and copy data
-	char *str = (char *)malloc( size*sizeof(char) );
-	strcpy(str, s);
-
-	// Strip spaces are remove zero
-	str = Bigint_strip(str);
-
-	// If 1st digit is sign
-	if ( str[0]=='+' || str[0]=='-' ) { str++; }
-
-	return str;
 }
 
 
 /* Function to check if input string is valid to create Bigint no. */
 int Bigint_isStringValid(char *number) {
+
 	// Check for spaces at left and at right
 	int l=0, r=strlen(number)-1;
 	while(number[l]==' ' || number[r]==' ') {
@@ -102,11 +107,13 @@ int Bigint_isStringValid(char *number) {
 		if ( !isdigit(number[i]) ) { return 0; }
 	}
 	return 1;
+
 }
 
 
 /* Function to set Invalid Bigint no. */
 Bigint Bigint_none(char *msg) {
+
 	Bigint temp;
 
 	temp.value = Bigint_assign(msg, strlen(msg));
@@ -114,6 +121,7 @@ Bigint Bigint_none(char *msg) {
 	temp.sign = -1;
 
 	return temp;
+
 }
 
 
@@ -130,10 +138,10 @@ int Bigint_isValid( Bigint number ) {
 
 
 /* Function to set Bigint no. */
-Bigint Bigint_set( char *number, int valid ) {
+Bigint Bigint_set( char *num, int valid ) {
 
 	// Strip
-	number = Bigint_strip( number );
+	char *number = Bigint_strip( num );
 
 	// check if input string in valid
 	if ( !valid ) {
@@ -154,7 +162,9 @@ Bigint Bigint_set( char *number, int valid ) {
 
 /* Function to Compare only number not sign */
 int Bigint_strcmp( Bigint n1, Bigint n2 ) {
+
 	return n1.size==n2.size ? strcmp(n1.value,n2.value) : n1.size-n2.size;
+
 }
 
 
